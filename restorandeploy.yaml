@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: skmirza-restoran-deploy
+  labels:
+    app: skmirza-restoran-deploy-lb01
+spec:
+  replicas: 4
+  selector:
+    matchLabels:
+      app: skmirza-restoran-app
+  template:
+    metadata:
+      labels:
+        app: skmirza-restoran-app
+    spec:
+      containers:
+      - name: skmirza-restoran-container
+        image: sameer014/skmirza-restoran-img:latest
+        resources:
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+        ports:
+        - containerPort: 8089
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: skmirza-restoran-np-service
+  labels:
+    app: skmirza-restoran-np-app
+spec:
+  selector:
+    app: skmirza-restoran-app
+
+  type: NodePort
+  ports:
+  - nodePort: 30022
+    port: 8089
+    targetPort: 8089
